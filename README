@@ -213,20 +213,18 @@ Astfel prin urmatoarele linii de cod:
 In limbaj uzual: cat timp valoarea nu e in interval, cresc intervalul.	
 Reiau procesul while(nod), cat timp am elemente in lista.
 Este prima functie de tip void.
-Fisierul tema1.c este insotit de Makefile ce construieste cu regula de 
-build executabilul tema1.
+Fisierul main.c este insotit de Makefile ce construieste cu regula de 
+build executabilul main.
 Deoarece functia st printeaza deja, doar in cazul in care argumentele in 
 linia de comanda sunt diferite de st se printeaza lista la final dupa 
 modificari cu functia: 
 
 void print_list(list_t *list);
 
-Rularea se realizeaza: ./tema1 --arg
-De exemplu: ./tema1 --e1 --e2 --u
+Rularea se realizeaza: ./main --arg
+De exemplu: ./main --e1 --e2 --u
 nr_nod
 t1 v1
 t2 v2
 ..
 tn vn
-TEMA REALIZATA DE: SOARE CERASELA-NICOLA
-313CC.
