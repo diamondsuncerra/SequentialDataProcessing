@@ -1,230 +1,72 @@
-	Algoritmii implementati in cadrul acestei teme au ca scop corectarea
-si completarea datelor primite. Limbajul de programare este C iar structura 
-de date utilizata este lista dublu inlantuita.
- Datele sunt citite de la tastatura dupa formatul :
-   Numar_Date
-  timestamp data
-Pentru a determina ce fel de algoritmi se aplica asupra datelor primite
-se citesc argumente in linia de comanda sub forma : --comanda(optional:numar)
-Algoritmii sunt:
---e1  : Eliminare exceptii folosind statistici
---e2  : Eliminare de zgomot prin filtru median
---e3  : Eliminare de zgomot prin filtru bazat de media aritmetica
---u   : Uniformizarea frecventei
---c   : Completarea datelor lipsa
---stN : Realizarea statisticii asupra datelor. N este un numar. 
-Cat timp se parcurg argumentele in linia de comanda se realizeaza noi liste
-conform cerintei argumentului actual si se returneaza noua lista.
-nr codifica argumentul. 
-         switch (nr) {
-         case 1:
-            list = e1(list);
-            break;
-         case 2:
-            list = e2(list);
-            break;
-         case 3:
-            list = e3(list);
-            break;
-         case 4:
-            list = u(list);
-            break;
-         case 5:
-            c(list);
-            break;
-         }
-Pentru algoritmul st se ia un caz separat deoarece nu se returneaza o lista
-ci doar se afiseaza statistica listei. Se preia numarul N din argument.
-In acest caz se insereaza in ordine crescatoare elementele in lista cu 
-ajutorul functiei: 
+# Sequential Data Processing
 
-int insert_sorted_asc(list_t *list,int time, double val);
+This C program demonstrates various data processing algorithms implemented using a doubly linked list data structure.
+The primary objective is to correct and enhance received data points. The algorithms address challenges such as 
+noise reduction, data completion, and frequency uniformization. The program provides a command-line interface to
+apply these algorithms selectively to the data.
 
-Pentru celelalte cazuri se utilizeaza inserarea normala a nodurilor la finalul
-listei cu ajutorul functiei:
+The program focuses on improving the quality of received data by applying a series of algorithms. 
+The provided data includes timestamps and values, and these algorithms aim to enhance the data points,
+eliminate noise, and provide insights through statistical analysis. The implementation adheres to the constraint 
+of using doubly linked lists instead of arrays, offering flexibility and efficiency.
 
-int insert_node(list_t *list,int time, double val, int position);
+## Getting Started
 
-	 Se respecta cerinta de a nu utiliza vectori, astfel toate datele sunt
- stocate in liste dublu inlantuite ce sunt de forma: 
-typedef struct dl_list {
-    node_t *head;
-    node_t *tail;
-    int len;
-} list_t;
+### Compilation
 
-Nodurile sunt definite astfel:
+To compile the program, navigate to the project directory and execute the provided Makefile. Open a terminal and run:
 
-typedef struct node{
-  int *timestamp;
-  double *value;
-  struct node *next;
-  struct node *prev;
-} node_t;
+```shell
+make
+```
 
-	In continuare, se prezinta cele 6 functii principale ce efectueaza operatiile
-dorite. Primelele 3 au ca scop eliminarea discrepantei dintre valorile
-citite prin diverse filtre.
+This will generate an executable named `main`.
 
-1. ELIMINARE EXCEPTII FOLOSIND STATISTICI: --e1
-list_t * e1(list_t *list);
-     Functia utilizate:
+### Running the Program
 
-list_t *init_list(); => Initializeaza lista dublu inlantuita
+Once compiled, you can run the program with specific algorithm flags. 
+For instance, to apply algorithms `--e1`, `--e2`, and `--u`, you can execute:
 
-int insert_node(list_t *list,int time, double val, int position); => Insereaza
-alt nod in lista noua.
+```shell
+./main --e1 --e2 --u
+```
 
-double medie(list_t *list,node_t *nod,int m); => Calculeaza media aritmetica
-a ferestrei cu m*2+1 elemente
+Provide the total number of data points followed by each data point's timestamp and value.
 
-double deviatia_standard(list_t *list, node_t *nod,int m, double media);
-=> calculeaza deviatia standard a nodului
+## Algorithms
 
-Functia creeaza o noua lista new_list in care introduce mai intai: primele
-k/2 elemente (int m) , apoi face decizia pentru urmatoarele noduri mai putin
-ultimele k/2 noduri care sunt oricum inserate. Decizia de a insera nodurile
-din mijloc se face dupa cum urmeaza: se afla *nod->value in [x-dev,x+dev]?
-unde x e media aritmetica a nodurilor din fereasta si dev e deviatia standard
-a ferestrei din jurul nodului.
-La final se returneaza lista new_list.
+### Exception Elimination Using Statistics
 
-2. ELIMINARE DE ZGOMOT PRIN FILTRU MEDIAN: --e2
-list_t * e2(list_t *list);
-	Functia utilizate:
+This algorithm focuses on eliminating exceptional data points by leveraging statistical analysis. 
+It creates a new list, adjusting data points based on calculated averages and standard deviations 
+within predefined windows.
 
-list_t *init_list(); -> INITIALIZARE LISTA
+### Noise Elimination Using Median Filter
 
-double val_mediana(list_t *list, node_t *nod,int time, int k);
--> Calculeaza valoarea mediana a ferestrei de k elemente si o returneaza.
-Valoarea mediana este elementul din mijloc al ferestrei sortate.
+This algorithm addresses noise reduction by implementing a median filter. It calculates the median value
+within a specified window and inserts these medians into a new list.
 
-int insert_node(list_t *list,int time, double val, int position);
--> insereaza nodul cu valoarea val si timestampul time la finalul listei,
-deci la position=new_list->len
+### Noise Elimination Using Mean-Based Filter
 
-	Se creeaza o noua lista new_list in care se vor introduce
-valoriile mediane ale ferestrelor calculate si inserate cu functiile descrise
-mai sus. Se tine cont de first_nod si last_nod care sunt primul, respectiv
-ultimul nod ce poate fi mijlocul unei ferestre, pentru usurinta. Ele sunt
-retinute prin parcurgerea listei de m=2 ori de la head cu ajutorul lui next,
-respectiv de la tail cu ajutorul lui prev.
-Se returneaza new_list.
-	
-3. ELIMINARE DE ZGOMOT PRIN FILTRU BAZAT PE MEDIA ARITMETICA: --e3
-list_t * e1(list_t *list);
-	Functii utilizate:
+To further reduce noise, this algorithm employs a mean-based filter. It calculates the mean value within
+a window and inserts these calculated mean values into a new list.
 
-int insert_node(list_t *list,int time, double val, int position); ->
-Insereaza in noua lista elementele cerute la final.
+### Frequency Uniformization
 
-double medie(list_t *list,node_t *nod,int m);-> calculeaza media aritmetica
-a ferestrei de m*2+1 elemente in jurul nodului nod
+This algorithm aims to harmonize data point frequencies over time. If the interval between consecutive data 
+points exceeds a set threshold, the values and timestamps are adjusted using arithmetic averages.
 
-	Asemanator functiei e2 se tine cont de first_nod si last_nod care
-sunt primul si ultimul nod care pot fi mijlocul ferestrei. Se calculeaza
-media aritmetica a fiecarei ferestre si se introduce in noua lista new_list.
-Se trece la urmatorul nod , pana cand facem operatia si pe fereasta cu 
-nodul din mijloc last_nod. Se returneaza lista.
+### Data Completion
 
-4. UNIFORMIZAREA FRECVENTEI: --u
-	Se doreste uniformizarea frecventei in timp a datelor. Daca se trece
-peste un anumit interval temporal intre doua date consecutive, dorim sa le 
-corectam prin media aritmetica a timestampurilor si a valorilor efective
-ale celor doua noduri.
-	Functii utilizate:
+In cases where data intervals are significantly large, this algorithm offers data completion. By applying
+defined formulas, the missing data points are estimated based on neighboring values and timestamps.
 
-int frequency(list_t *list,node_t *nod); -> daca frequency returneaza 1
-valorile trebuie modificate. Se returneaza 1 daca diferenta dintre timestampul
-nodului ales ca parametru si cel al lui nod->prev se afla in [0.1,1] secunde
-sau [100,1000] milisecunde.
+### Statistical Analysis
 
-int insert_node(list_t *list,int time, double val, int position);
--> functionalitate descrisa anterior.
+This algorithm performs statistical analysis over intervals of specified lengths. It displays the count 
+of data points within each interval starting from the smallest value.
 
-	Se parcurg toate nodurile din lista. Daca frequency detecteaza nevoia
-de rectificare a datelor se face media aritmetica dintre valoarea nodului
-si cea a nodului anterior, dar si dintre timestampul nodului actual si cel
-anterior. Se scrie peste in list la pozitia nodului actual (pentru posibile
-rectificari intre nod si nod->next) si se insereaza in new_list.
-Daca frequency returneaza 0, nu este nevoie de moficare deci nodul este pur 
-si simplu inserat in new_list. Se returneaza new_list.
+## Usage
 
-5. COMPLETAREA DATELOR: --c
-	Daca intervalele lipsa sunt mult prea mari, uniformizarea nu da
-rezultatele dorite. Astfel, datele trebuie completate. Se utilizeaza 
-formulele date pentru a a crea:
-C-> factor de scalare recalculat la fiecare noua valoare completata.
-w-> lista dublu inlantuita ce masoara gradul in care valorile, departate
-sau apropiate de locul de inserare, influenteaza valoarea inserata.
-Pentru a nu declara o alta structura fara campul timestamp, se utilizeaza
-acelasi tip de lista dublu inlantuita doar ca timestamp = 0 mereu.
-f-> valoarea inserata.
-Apar si listele right si left, cei trei vecini din dreapta respectiv stanga
-ai intervalului completat. Actualizate la fiecare nou interval gasit de 
-completat.
-	Functii utilizate:
-int interval_mare(list_t *list,node_t *nod,int interval); ->
-returneaza 1 daca diferenta in modul dintre nod->value si nod->next->value
-depaseste pragul dat ca parametru. Se utilizeaza interval=1000.
-
-list_t *init_list();-> se initializeaza listele: right, left, w.
-Cele trei liste au 3 elemente fiecare.
-
-double factor_de_scalare(list_t *right,list_t *left,int time); ->
-calculeaza constanta C dupa formula.
-
-double compute_w(double i, double k); -> calculeaza elementele liste w. 
-Functie apelata de 3 ori pentru 3 elemente.
-
-double compute_function(double c, list_t *right, list_t *left, list_t *w);
--> Creeaza valoarea efectiva adaugata dupa formula.
-
-	De data aceasta, se insereaza in lista primita ca argument.
-Functia gaseste nodurile cu problema de interval.
-Apoi urmeaza in ordine:
--> creez lista right cu vecinii din dreapta
--> creez lista left cu vecinii din stanga
--> creez si calculez w
--> completez valori din 200 in 200 pana ajung la capatul intervalului
--> calculez factor scalare pentru fiecare noua valoare adaugata
--> calculez f ajutandu-ma de left, right, w si c
--> inserez f la pozitia de care tine cont contor
--> repet pana ies din interval
--> caut alt interval, repet
-
-6. STATISTICI: --stN
-N -> numar
-	Dorim o statistica a datelor pe intervale. Se afiseaza cate numere se
-aflat in intervale de lungime N incepand cu cel mai mic numar din lista.
-Se face mentiunea la care se va reveni ulterior ca elementele sunt deja 
-inserate crescator in lista.
-	Functii utilizate:
-
-void print_interval(int x, int y,int nr); -> Afiseaza dupa formatul prestabilit
-intervalul si numarul de numere ce apartin intervalului.
-
-	Functionalitatea este simpla: Cat timp sunt in interval numar
-elementele. Cand ies, fac printare si resetez numaratoarea.
-Totodata, verific sa nu fie un interval de N elemente lipsa.
-Astfel prin urmatoarele linii de cod: 
-         while ( * nod -> value >= x + delta || * nod -> value < x)
-            x += delta;
-In limbaj uzual: cat timp valoarea nu e in interval, cresc intervalul.	
-Reiau procesul while(nod), cat timp am elemente in lista.
-Este prima functie de tip void.
-Fisierul main.c este insotit de Makefile ce construieste cu regula de 
-build executabilul main.
-Deoarece functia st printeaza deja, doar in cazul in care argumentele in 
-linia de comanda sunt diferite de st se printeaza lista la final dupa 
-modificari cu functia: 
-
-void print_list(list_t *list);
-
-Rularea se realizeaza: ./main --arg
-De exemplu: ./main --e1 --e2 --u
-nr_nod
-t1 v1
-t2 v2
-..
-tn vn
+After running the program with desired algorithm flags, the resulting modified list is displayed. If the
+statistical analysis algorithm `--stN` is used, the program prints interval statistics.
